@@ -1,0 +1,9 @@
+{
+  "apiKey": "your key",
+  "authDomain": "your domain",
+  "databaseURL": "your url",
+  "projectId": "your id",
+  "storageBucket": "your bucket",
+  "messagingSenderId": "your messengerid",
+  "appId": "your apppid"
+}
