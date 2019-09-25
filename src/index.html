@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>TODO</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+  <link rel="stylesheet" href="/style/style.css">
+</head>
+<body>
+  <nav class="navbar navbar-dark bg-info d-flex justify-space-between vertical-align-center">
+    <a class="navbar-brand" href="#">ToDo</a>
+    <ul class="navbar-nav">
+
+    <li class="nav-item" id="add-button">
+      <a class="nav-link">
+        <img src="/img/plus.svg" height="50" width="50" alt="plus" class="icon-white">
+      </a>
+    </li>
+    </ul>
+  </nav>
+
+
+
+  <div class="container mt-3">
+    <div class="row align-items-center flex-column" id="todo-lists-list">
+
+    </div>
+  </div>
+
+
+
+  <div class="modal" tabindex="-1" role="dialog" id="create-modal">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="create-modal-title">Nieuwe todolijst maken</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body" id="create-modal-body">
+          <div>
+            <div class="form-group">
+              <label for="create-modal-name-input">Naam van de todolijst</label>
+              <input type="text" class="form-control" id="create-modal-name-input" placeholder="Naam van deze lijst...">
+            </div>
+            <hr>
+            <div class="form-group">
+              <input type="text" class="form-control" id="create-modal-task-input" placeholder="Naam nieuwe taak...">
+            </div>
+          </div>
+          <ul id="create-modal-task-list" class="list-group list-group-flush"></ul>
+        </div>
+        <div class="modal-footer">
+          <button type="button" id="create-modal-save" class="btn btn-info">Todolijst opslaan</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" tabindex="-1" role="dialog" id="update-modal">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="update-modal-title"></h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body" id="update-modal-body">
+          <ul id="update-modal-task-list" class="list-group list-group-flush">
+
+          </ul>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-danger" id="update-modal-delete">Todolijst verwijderen</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
+  <script src="https://www.gstatic.com/firebasejs/6.6.2/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/6.6.2/firebase-database.js"></script>
+
+  <script src="/js/firebase.js"></script>
+  <script src="/js/helper.js"></script>
+  <script src="/js/builder.js"></script>
+  <script src="/js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,18 @@
+{
+  "name": "todo",
+  "version": "1.0.0",
+  "description": "A Todo application demonstrating the functionalities of a progressive web app",
+  "main": "index.html",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "http-server ./src -c-1"
+  },
+  "author": "Johan Schobben <johan.schobben@student.hu.nl>",
+  "license": "MIT",
+  "devDependencies": {
+    "http-server": "^0.11.1"
+  },
+  "dependencies": {
+    "eslint": "^6.4.0"
+  }
+}
