@@ -120,21 +120,6 @@ updateModalDelete.addEventListener("click", function(){
   deleteTodo(todoListId);
 });
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 var todos = [];
 
 
@@ -159,3 +144,9 @@ fetch('/static/config.json')
       todoListLocation.appendChild(item);
     });
   });
+
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function () {
+    navigator.serviceWorker.register("/sw.js");
+  })
+}
