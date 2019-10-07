@@ -22,6 +22,11 @@ function TodoList(id, name, tasks){
   }
 }
 
+// this is a comment
+
+/*
+ * this is a multiline comment
+ */
 
 function createTodoListList(todoLists){
   return todoLists.map(function(todolist, index){

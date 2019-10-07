@@ -3,5 +3,6 @@
 }
 
 .list-group-item {
-    cursor: pointer;
+    cursor: pointer !important;
 }
+

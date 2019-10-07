@@ -5,7 +5,7 @@ function getTodos(){
 }
 
 function saveTodo(todoList){
-  firebase.database().ref('todos/'+todoList.id).set(todoList.toObject());
+  // firebase.database().ref('todos/'+todoList.id).set(todoList.toObject());
 }
 
 function deleteTodo(id){

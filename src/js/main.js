@@ -103,47 +103,62 @@ createModalSave.addEventListener("click", function (event) {
     createModalErrorMessage.innerText = "de nieuwe todolijst moet ten miste een taak hebben;";
     return;
   }
-  const newTodo = new TodoList(Date.now().toString(), taskName, newTodoTasks);
-  todos.push(newTodo);
-  $("#create-modal").modal('hide');
-  updateTodoListCards();
-  saveTodo(newTodo);
+  const todoObject = new TodoList(null, taskName, newTodoTasks);
+
+  saveTodo(todoObject)
+    .then(function (response) {
+      if (response.status >= 400){
+        // todo log errror to user
+      }
+      return response.json();
+    })
+    .then(function(json){
+      todoObject.id = json.name;
+      todos.push(todoObject);
+      updateTodoListCards();
+      $("#create-modal").modal('hide');
+
+    })
 });
 
 updateModalDelete.addEventListener("click", function(){
   const todoListId = updateModal.dataset.todo;
-  todos = todos.filter(function (todo) {
-    return todo.id !==todoListId;
-  });
-  updateTodoListCards();
-  $("#update-modal").modal('hide');
-  deleteTodo(todoListId);
+
+  deleteTodo(todoListId)
+    .then(function(response){
+      $("#update-modal").modal('hide');
+      if (!(response.status >= 400)) {
+        todos = todos.filter(function (todo) {
+          return todo.id !== todoListId;
+        });
+        console.log(todoListId, todos);
+        updateTodoListCards();
+      }
+    })
 });
 
 var todos = [];
 
-
-fetch('/static/config.json')
-  .then(function (res) {
-    return res.json();
-  })
-  .then(function (config) {
-    firebase.initializeApp(config);
-    return getTodos();
-  })
-  .then(function (data) {
-    const value = data.val();
-    const gottenTodos = [];
-    for (const obj in value){
-      const currentObject = value[obj];
-      const todolist = new TodoList(currentObject.id, currentObject.name, currentObject.tasks);
-      gottenTodos.push(todolist);
+getTodos()
+  .then(function (response) {
+    if (response.status !== 200){
+      // TODO show error to user
     }
-    todos = gottenTodos;
+    return response.json();
+  })
+  .then(function(json){
+    const todoLists = [];
+    for(const object in json){
+      const todoListJson = json[object];
+      const todoList = new TodoList(object, todoListJson.name, todoListJson.tasks);
+      todoLists.push(todoList);
+    }
+    todos = todoLists;
     createTodoListList(todos).forEach(function(item) {
       todoListLocation.appendChild(item);
     });
   });
+
 
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', function () {

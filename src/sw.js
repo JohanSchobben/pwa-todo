@@ -1,4 +1,5 @@
-const CACHE_NAME = "todopwa";
+const VERSION = 9;
+const CACHE_NAME = "todopwa-cache";
 const CACHED_FILES = [
   "/",
   "index.html",
@@ -6,6 +7,7 @@ const CACHED_FILES = [
   "/js/builder.js",
   "/js/firebase.js",
   "/js/helper.js",
+  "/js/network.js",
   "/js/main.js",
   "/img/plus.svg",
   "/js/firebase-app.js",
@@ -26,16 +28,21 @@ self.addEventListener("install", function (event) {
 });
 
 self.addEventListener("fetch", function (event) {
-  const fetchResponse = caches.match(event.request)
-    .then(function(result){
-      if (result) return result;
-      return fetch(event.request)
-        .then(function (response) {
+
+  if (/^https:\/\/todo-afstuderen/.test(event.request.url)){
+    event.respondWith(fetch(event.request));
+    return;
+  }
+  event.respondWith(
+    caches.match(event.request).then(function(response) {
+      return response || fetch(event.request)
+        .then(function (res) {
           return caches.open(CACHE_NAME)
             .then(function (cache) {
-              cache.put(event.request.url, response.clone())
+              cache.put(event.request.url, res.clone());
+              return res;
             });
-        });
-    });
-  event.respondWith(fetchResponse);
+        })
+      })
+  )
 });
