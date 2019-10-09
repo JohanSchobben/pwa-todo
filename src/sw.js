@@ -1,10 +1,11 @@
-const VERSION = 10;
+const VERSION = 36;
 const CACHE_NAME = "todopwa-cache";
 const CACHED_FILES = [
   "/",
   "index.html",
   "/static/config.json",
   "/js/builder.js",
+  "/js/idb.js",
   "/js/helper.js",
   "/js/network.js",
   "/js/main.js",

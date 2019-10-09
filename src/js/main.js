@@ -15,8 +15,9 @@ const updateModalBody = document.querySelector("#update-modal-body");
 const updateModalTaskList = document.querySelector("#update-modal-task-list");
 const updateModalDelete = document.querySelector("#update-modal-delete");
 
-let newTodoTasks = [];
-
+let newTodoTasks;
+var todos;
+let db;
 
 function updateTodoListCards(){
   todoListLocation.innerHTML = '';
@@ -47,8 +48,10 @@ updateModalTaskList.addEventListener("click", function (event) {
   if(!currentTodoListElement) return;
 
   const clickedItem = getParentViaSelector(event.target, ".list-group-item");
-  const todoItemCheckbox = clickedItem.querySelector("input[type=checkbox]");
-  todoItemCheckbox.checked = !todoItemCheckbox.checked;
+  const todoItemCheckbox = clickedItem.querySelector("input[type=checkbox]")
+  if (event.target !== todoItemCheckbox) {
+    todoItemCheckbox.checked = !todoItemCheckbox.checked;
+  }
   const currentTodoList = todos.filter(function (todoList) {
     return todoList.id === updateModal.dataset.todo;
   })[0];
@@ -59,7 +62,8 @@ updateModalTaskList.addEventListener("click", function (event) {
     }
   });
 
-  updateTodo(currentTodoList)
+  updateTodo(currentTodoList);
+  updateElementInIndexedDatabase(currentTodoList.toObject(), db);
 });
 
 addButton.addEventListener("click", function (event) {
@@ -116,6 +120,7 @@ createModalSave.addEventListener("click", function (event) {
       todoObject.id = json.name;
       todos.push(todoObject);
       updateTodoListCards();
+      storeInIndexedDatabase(todoObject.toObject(), db);
       $("#create-modal").modal('hide');
 
     })
@@ -133,35 +138,55 @@ updateModalDelete.addEventListener("click", function(){
         });
         console.log(todoListId, todos);
         updateTodoListCards();
+        deleteElementInIndexedDatabase(todoListId, db)
       }
     })
 });
 
-var todos = [];
+!function main(){
+  todos = [];
+  newTodoTasks = [];
 
-getTodos()
-  .then(function (response) {
-    if (response.status !== 200){
-      // TODO show error to user
-    }
-    return response.json();
-  })
-  .then(function(json){
-    const todoLists = [];
-    for(const object in json){
-      const todoListJson = json[object];
-      const todoList = new TodoList(object, todoListJson.name, todoListJson.tasks);
-      todoLists.push(todoList);
-    }
-    todos = todoLists;
-    createTodoListList(todos).forEach(function(item) {
-      todoListLocation.appendChild(item);
+  openIndexedDatabase()
+    .then(function (database) {
+      db = database;
+      return readFromIndexedDatabase(db);
+    })
+    .then(function(items){
+      todos = items;
+      createTodoListList(todos).forEach(function(item) {
+        todoListLocation.appendChild(item);
+      });
     });
-  });
+
+  getTodos()
+    .then(function (response) {
+      if (response.status !== 200){
+        // TODO show error to user
+      }
+      return response.json();
+    })
+    .then(function(json){
+      const todoLists = [];
+      for(const object in json){
+        const todoListJson = json[object];
+        const todoList = new TodoList(object, todoListJson.name, todoListJson.tasks);
+        todoLists.push(todoList);
+        updateElementInIndexedDatabase(todoList.toObject(), db);
+
+      }
+      todos = todoLists;
+      createTodoListList(todos).forEach(function(item) {
+        todoListLocation.appendChild(item);
+      });
 
 
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', function () {
-    navigator.serviceWorker.register("/sw.js");
-  })
-}
+    });
+
+
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function () {
+      navigator.serviceWorker.register("/sw.js");
+    })
+  }
+}();
