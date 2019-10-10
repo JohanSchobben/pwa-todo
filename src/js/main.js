@@ -1,5 +1,6 @@
 const todoListLocation = document.querySelector('#todo-lists-list');
 const addButton = document.querySelector("#add-button");
+const offlineTag = document.querySelector("#offline-tag");
 
 const createModal = document.querySelector("#create-modal");
 const createModalBody = document.querySelector("#create-modal-body");
@@ -26,6 +27,15 @@ function updateTodoListCards(){
     todoListLocation.appendChild(element);
   });
 }
+
+
+window.addEventListener("online", function () {
+  offlineTag.style.display = "none"
+});
+
+window.addEventListener("offline", function () {
+  offlineTag.style.display = "inline"
+});
 
 todoListLocation.addEventListener("click", function (event) {
   if(!event.target.matches('div.card *')) return;
@@ -200,5 +210,9 @@ updateModalDelete.addEventListener("click", function(){
     window.addEventListener('load', function () {
       navigator.serviceWorker.register("/sw.js");
     })
+  }
+
+  if(navigator.onLine){
+    offlineTag.style.display = "none";
   }
 }();
