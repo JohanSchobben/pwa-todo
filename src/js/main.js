@@ -62,8 +62,8 @@ updateModalTaskList.addEventListener("click", function (event) {
     }
   });
 
-  updateTodo(currentTodoList);
   updateElementInIndexedDatabase(currentTodoList.toObject(), db);
+  updateTodo(currentTodoList);
 });
 
 addButton.addEventListener("click", function (event) {
@@ -107,7 +107,13 @@ createModalSave.addEventListener("click", function (event) {
     createModalErrorMessage.innerText = "de nieuwe todolijst moet ten miste een taak hebben;";
     return;
   }
-  const todoObject = new TodoList(null, taskName, newTodoTasks);
+  $("#create-modal").modal('hide');
+
+  const currentDate = Date.now().toString()
+  const todoObject = new TodoList("" + currentDate, taskName, newTodoTasks);
+  todos.push(todoObject);
+  updateTodoListCards();
+  storeInIndexedDatabase(todoObject.toObject(), db);
 
   saveTodo(todoObject)
     .then(function (response) {
@@ -118,12 +124,9 @@ createModalSave.addEventListener("click", function (event) {
     })
     .then(function(json){
       todoObject.id = json.name;
-      todos.push(todoObject);
-      updateTodoListCards();
       storeInIndexedDatabase(todoObject.toObject(), db);
-      $("#create-modal").modal('hide');
 
-    })
+    });
 });
 
 updateModalDelete.addEventListener("click", function(){
@@ -131,15 +134,17 @@ updateModalDelete.addEventListener("click", function(){
 
   deleteTodo(todoListId)
     .then(function(response){
-      $("#update-modal").modal('hide');
       if (!(response.status >= 400)) {
-        todos = todos.filter(function (todo) {
-          return todo.id !== todoListId;
-        });
-        updateTodoListCards();
-        deleteElementInIndexedDatabase(todoListId, db)
+
         return;
       }
+      todos = todos.filter(function (todo) {
+        return todo.id !== todoListId;
+      });
+
+      $("#update-modal").modal('hide');
+      deleteElementInIndexedDatabase(todoListId, db)
+      updateTodoListCards();
 
     })
 });
