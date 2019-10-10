@@ -136,10 +136,11 @@ updateModalDelete.addEventListener("click", function(){
         todos = todos.filter(function (todo) {
           return todo.id !== todoListId;
         });
-        console.log(todoListId, todos);
         updateTodoListCards();
         deleteElementInIndexedDatabase(todoListId, db)
+        return;
       }
+
     })
 });
 
@@ -157,6 +158,9 @@ updateModalDelete.addEventListener("click", function(){
       createTodoListList(todos).forEach(function(item) {
         todoListLocation.appendChild(item);
       });
+    })
+    .catch(function(err){
+      // TODO show error message
     });
 
   getTodos()
@@ -172,7 +176,10 @@ updateModalDelete.addEventListener("click", function(){
         const todoListJson = json[object];
         const todoList = new TodoList(object, todoListJson.name, todoListJson.tasks);
         todoLists.push(todoList);
-        updateElementInIndexedDatabase(todoList.toObject(), db);
+        updateElementInIndexedDatabase(todoList.toObject(), db)
+          .catch(function(){
+            // todo handle error
+          })
 
       }
       todos = todoLists;
