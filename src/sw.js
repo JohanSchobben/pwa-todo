@@ -15,6 +15,8 @@ const CACHED_FILES = [
   "https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
 ];
 
+self.importScripts("/js/idb.js", "/js/network.js");
+
 self.addEventListener("install", function (event) {
     event.waitUntil(
       caches.open(CACHE_NAME)
@@ -43,3 +45,48 @@ self.addEventListener("fetch", function (event) {
       })
   )
 });
+
+self.addEventListener("sync", function (event) {
+  console.log("in syncmanager");
+  if (event.tag === 'sync-todo') {
+    console.log("via sync-todo");
+    event.waitUntil(
+      openIndexedDatabase()
+        .then(function (db) {
+          return readFromIndexedDatabase(db, "sync-store");
+        })
+        .then(function (syncActions) {
+
+          for (const action of syncActions) {
+            handleAction(action, dbcon);
+          }
+        })
+    );
+  }
+});
+
+function handleAction(action,db){
+  switch (action.type) {
+    case "create":
+      return saveTodo(action.todo)
+        .then(function (response){
+          return handleSyncResponse(response)
+        });
+    case "update":
+      return updateTodo(action.todo)
+        .then(handleSyncResponse);
+    case "delete":
+      return delete (action.todo.id)
+        .then(handleSyncResponse);
+
+  }
+}
+
+function handleSyncResponse(response){
+  console.log(response);
+  if (!respone.ok) {
+    return deleteElementInIndexedDatabase(action.id, db, "sync-store");
+  } else {
+    // todo handle error
+  }
+}

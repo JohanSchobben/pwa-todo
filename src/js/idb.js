@@ -1,18 +1,19 @@
-
-window.IDBTransaction = window.IDBTransaction || window.webkitIDBTransaction || window.msIDBTransaction;
-window.IDBKeyRange = window.IDBKeyRange || window.webkitIDBKeyRange || window.msIDBKeyRange;
+// window.IDBTransaction = window.IDBTransaction || window.webkitIDBTransaction || window.msIDBTransaction;
+// window.IDBKeyRange = window.IDBKeyRange || window.webkitIDBKeyRange || window.msIDBKeyRange;
 
 const DB_NAME = "todo-db";
-const DB_VERSION = 1;
+const DB_VERSION = 2;
 
 function openIndexedDatabase(databaseName = DB_NAME, databaseVersion = DB_VERSION){
   return new Promise(function(resolve){
     let firstEventDone = false;
-    const request = window.indexedDB.open(databaseName, databaseVersion);
+    const request = indexedDB.open(databaseName, databaseVersion);
     request.onupgradeneeded = function(event){
       const connection = event.target.result;
       const todoObjectStore = connection.createObjectStore("todo-store", {keyPath: "id"});
       todoObjectStore.createIndex("todoindex", "id", {unique: true});
+      const syncmanagerObjectStore = connection.createObjectStore("sync-store", {keyPath: "id"});
+      todoObjectStore.createIndex("syncindex", "id", {unique: true});
       if (firstEventDone) {
         db = request.result;
         resolve(db);
@@ -50,6 +51,23 @@ function readFromIndexedDatabase(db, objectStore = "todo-store"){
 
       }
 
+    };
+  });
+}
+
+function readFromIndexedDatabaseById(id, db, objectStore = "todo-store"){
+  return new Promise(function (resolve) {
+    const objectStore = db.transaction(objectStore, "readwrite")
+      .objectStore(objectStore);
+
+    const request = objectStore.get(id);
+
+    request.onsuccess = function (event) {
+      resolve(event.result);
+    };
+
+    request.onerror = function (event) {
+      reject(event);
     };
   });
 }

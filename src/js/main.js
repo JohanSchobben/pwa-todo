@@ -2,7 +2,6 @@ const todoListLocation = document.querySelector('#todo-lists-list');
 const addButton = document.querySelector("#add-button");
 const offlineTag = document.querySelector("#offline-tag");
 
-const createModal = document.querySelector("#create-modal");
 const createModalBody = document.querySelector("#create-modal-body");
 const createModalTaskList = document.querySelector("#create-modal-task-list");
 const createModalSave = document.querySelector("#create-modal-save");
@@ -12,7 +11,6 @@ const createModalErrorMessage = document.querySelector("#create-modal-error-text
 
 const updateModal = document.querySelector("#update-modal");
 const updateModalTitle = document.querySelector("#update-modal-title");
-const updateModalBody = document.querySelector("#update-modal-body");
 const updateModalTaskList = document.querySelector("#update-modal-task-list");
 const updateModalDelete = document.querySelector("#update-modal-delete");
 
@@ -119,24 +117,33 @@ createModalSave.addEventListener("click", function (event) {
   }
   $("#create-modal").modal('hide');
 
-  const currentDate = Date.now().toString()
+  const currentDate = Date.now().toString();
   const todoObject = new TodoList("" + currentDate, taskName, newTodoTasks);
   todos.push(todoObject);
   updateTodoListCards();
   storeInIndexedDatabase(todoObject.toObject(), db);
 
-  saveTodo(todoObject)
-    .then(function (response) {
-      if (response.status >= 400){
-        // todo log errror to user
-      }
-      return response.json();
-    })
-    .then(function(json){
-      todoObject.id = json.name;
-      storeInIndexedDatabase(todoObject.toObject(), db);
+  if ("serviceWorker" in navigator && "SyncManager" in window){
+    const syncedTodo = {
+      id: Date.now(),
+      todo: todoObject.toObject(),
+      type: "create"
+    };
+    syncAction(syncedTodo, db);
+  } else {
+    saveTodo(todoObject)
+      .then(function (response) {
+        if (!response.ok){
+          // todo log errror to user
+        }
+        return response.json();
+      })
+      .then(function(json){
+        todoObject.id = json.name;
+        storeInIndexedDatabase(todoObject.toObject(), db);
 
-    });
+      });
+  }
 });
 
 updateModalDelete.addEventListener("click", function(){
